@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light dark}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>US Company Intake Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single filing-sheet column, numbered parts like a state form, sticky summary bar at the bottom */
+:root{
+  --bg:#f3f5f7; --sheet:#ffffff; --ink:#18232f; --muted:#5b6876; --line:#d8dee5;
+  --accent:#1d5a7a; --accent-soft:#e3eef4; --ok:#2e7d4f; --warn:#b5651d; --bad:#b03a2e;
+  --display:"IBM Plex Serif",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10161c; --sheet:#18212a; --ink:#e4eaf0; --muted:#97a4b1; --line:#2c3844;
+  --accent:#7fb8d6; --accent-soft:#1f3442; --ok:#6cc391; --warn:#e3a35f; --bad:#ec8277; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161c; --sheet:#18212a; --ink:#e4eaf0; --muted:#97a4b1; --line:#2c3844;
+  --accent:#7fb8d6; --accent-soft:#1f3442; --ok:#6cc391; --warn:#e3a35f; --bad:#ec8277; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding:0 16px}
+.wrap{max-width:860px;margin:0 auto;padding-block:32px 120px;display:grid;gap:20px}
+header h1{font-family:var(--display);font-weight:600;font-size:1.9rem;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.part{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:22px;display:grid;gap:16px;min-width:0}
+.part-head{display:flex;gap:12px;align-items:baseline}
+.part-no{font-family:var(--mono);font-size:.78rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.part h2{font-family:var(--display);font-size:1.2rem;font-weight:600;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.field{display:grid;gap:5px;min-width:0}
+label,.lbl{font-size:.78rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+input,select{font:inherit;color:var(--ink);background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:9px 10px;width:100%;min-width:0}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.hint{font-size:.82rem;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.8rem;background:var(--accent-soft);color:var(--accent);border-radius:99px;padding:3px 10px;width:max-content}
+.preview{font-family:var(--display);font-size:1.05rem;padding:10px 12px;border:1px dashed var(--line);border-radius:4px;min-height:44px;overflow-wrap:anywhere}
+.preview .ph{color:var(--muted);font-family:var(--body);font-size:.9rem}
+.people{display:grid;gap:14px}
+.person{border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:12px}
+.person-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.person-top strong{font-family:var(--display);font-weight:600}
+button{font:inherit;cursor:pointer;border-radius:4px;padding:9px 14px;border:1px solid var(--line);background:var(--sheet);color:var(--ink)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--sheet);font-weight:600}
+button.link{border:none;background:none;color:var(--bad);padding:4px 6px;font-size:.85rem}
+.total{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.pill{font-family:var(--mono);font-size:.82rem;padding:3px 10px;border-radius:99px;border:1px solid currentColor}
+.pill.ok{color:var(--ok)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--sheet);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar-in{max-width:860px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.bar-in .status{color:var(--muted);font-size:.88rem}
+.bar-in .btns{display:flex;gap:8px;flex-wrap:wrap}
+textarea#out{width:100%;min-height:200px;font-family:var(--mono);font-size:.82rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px}
+@media (prefers-reduced-motion:no-preference){input,select,button{transition:border-color .15s}}
+.brand{display:grid;justify-items:center;gap:8px;padding-block:4px 8px;border-bottom:1px solid var(--line)}
+.brand img{width:96px;height:96px;border-radius:14px;display:block}
+.brand-name{font-family:var(--display);font-weight:600;font-size:1.15rem;letter-spacing:.04em;color:var(--ink)}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="brand">
+    <img src="data:image/jpeg;base64,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" alt="Ikshana Z logo" width="96" height="96">
+    <span class="brand-name">Ikshana Z Inc</span>
+  </div>
+  <header>
+    <h1>US Company Intake Form</h1>
+    <p>Information needed to form the company. Fill in each part; the suffix options and share wording adjust to the entity type you pick. Your entries are saved in this browser as you type.</p>
+  </header>
+
+  <section class="part">
+    <div class="part-head"><span class="part-no">Part 1</span><h2>Entity type and state</h2></div>
+    <div class="grid">
+      <div class="field">
+        <label for="etype">Type of company</label>
+        <select id="etype">
+          <option value="">Select…</option>
+          <option value="LLC">LLC</option>
+          <option value="Partnership">Partnership</option>
+          <option value="Corporation">Corporation</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="state">Preferred state of formation</label>
+        <select id="state"></select>
+        <span class="hint">Delaware is the usual choice for venture funding; Wyoming for low cost.</span>
+      </div>
+      <div class="field">
+        <label for="fye">Period of closing the books of accounts</label>
+        <select id="fye">
+          <option value="">Select…</option>
+          <option>December 31</option><option>March 31</option><option>June 30</option><option>September 30</option>
+          <option>January 31</option><option>February 28</option><option>April 30</option><option>May 31</option>
+          <option>July 31</option><option>August 31</option><option>October 31</option><option>November 30</option>
+        </select>
+        <span class="hint">Fiscal year end. December 31 is standard; March 31 matches the Indian financial year.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="part">
+    <div class="part-head"><span class="part-no">Part 2</span><h2>Company name</h2></div>
+    <div class="grid">
+      <div class="field">
+        <label for="name1">Proposed name</label>
+        <input id="name1" placeholder="e.g. Northfield Analytics">
+      </div>
+      <div class="field">
+        <label for="name2">Second proposed name</label>
+        <input id="name2" placeholder="e.g. Northfield Data Labs">
+      </div>
+      <div class="field">
+        <label for="suffix">Suffix</label>
+        <select id="suffix" disabled><option value="">Pick a company type first</option></select>
+        <span id="suffixTag" class="tag" hidden></span>
+      </div>
+    </div>
+    <div class="field">
+      <span class="lbl">Name as it will be filed</span>
+      <div class="preview" id="prev1"><span class="ph">Proposed name + suffix appears here</span></div>
+      <div class="preview" id="prev2"><span class="ph">Second proposed name + suffix appears here</span></div>
+    </div>
+  </section>
+
+  <section class="part">
+    <div class="part-head"><span class="part-no">Part 3</span><h2 id="capHead">Shares / units</h2></div>
+    <div class="grid">
+      <div class="field">
+        <label for="authorized" id="authLbl">Number of authorized shares or units</label>
+        <input id="authorized" inputmode="numeric" placeholder="e.g. 10,000,000">
+      </div>
+      <div class="field">
+        <label for="par" id="parLbl">Par value per share / unit (USD)</label>
+        <input id="par" inputmode="decimal" placeholder="e.g. 0.00001">
+        <span class="hint" id="parHint">A low par value keeps the price founders pay, and Delaware franchise tax, small.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="part">
+    <div class="part-head"><span class="part-no">Part 4</span><h2 id="peopleHead">Partners / shareholders</h2></div>
+    <div class="people" id="people"></div>
+    <div class="total">
+      <button type="button" id="addPerson">+ Add person</button>
+      <span>Total proposed holding:</span>
+      <span class="pill" id="totalPill">0%</span>
+    </div>
+  </section>
+
+  <section class="part" id="outPart" hidden>
+    <div class="part-head"><span class="part-no">Summary</span><h2>Copy-ready summary</h2></div>
+    <textarea id="out" readonly aria-label="Summary text"></textarea>
+  </section>
+</div>
+
+<div class="bar"><div class="bar-in">
+  <span class="status" id="status">Draft saved in this browser</span>
+  <div class="btns">
+    <button type="button" id="resetBtn">Clear form</button>
+    <button type="button" id="summaryBtn">Show summary</button>
+    <button type="button" class="primary" id="copyBtn">Copy summary</button>
+  </div>
+</div></div>
+
+<datalist id="countries">
+  <option>India</option><option>United States</option><option>United Kingdom</option><option>Canada</option><option>Australia</option><option>Singapore</option><option>United Arab Emirates</option><option>Germany</option><option>France</option><option>Netherlands</option><option>Ireland</option><option>Switzerland</option><option>Japan</option><option>Hong Kong</option><option>China</option><option>Israel</option><option>Brazil</option><option>Mexico</option><option>South Africa</option><option>Nigeria</option><option>Kenya</option><option>Saudi Arabia</option><option>Qatar</option><option>New Zealand</option><option>Sri Lanka</option><option>Bangladesh</option><option>Pakistan</option><option>Nepal</option><option>Indonesia</option><option>Malaysia</option><option>Philippines</option><option>Vietnam</option><option>Thailand</option><option>South Korea</option><option>Spain</option><option>Italy</option><option>Sweden</option><option>Norway</option><option>Denmark</option><option>Poland</option>
+</datalist>
+
+<script>
+const STATES=["Delaware","Wyoming","Nevada","Florida","Texas","California","New York","—","Alabama","Alaska","Arizona","Arkansas","Colorado","Connecticut","District of Columbia","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","New Hampshire","New Jersey","New Mexico","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin"];
+const SUFFIX={
+  LLC:{tag:"LLC",opts:["LLC","L.L.C.","Limited Liability Company"]},
+  Partnership:{tag:"LLC",opts:["LLC","L.L.C.","Limited Liability Company"]},
+  Corporation:{tag:"Inc / Corp",opts:["Inc.","Corp.","Corporation","Incorporated","Co.","Company"]}
+};
+const $=id=>document.getElementById(id);
+const KEY="us-intake-v1";
+let people=[];
+
+const st=$("state");
+st.innerHTML='<option value="">Select…</option>'+STATES.map(s=>s==="—"?'<option disabled>──────────</option>':`<option>${s}</option>`).join("");
+
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function setSuffixOptions(keep){
+  const t=$("etype").value, sel=$("suffix"), tag=$("suffixTag");
+  if(!t){sel.innerHTML='<option value="">Pick a company type first</option>';sel.disabled=true;tag.hidden=true;return}
+  const cfg=SUFFIX[t];
+  sel.disabled=false;
+  sel.innerHTML=cfg.opts.map(o=>`<option>${o}</option>`).join("");
+  if(keep&&cfg.opts.includes(keep))sel.value=keep;
+  tag.textContent="Suffix group: "+cfg.tag; tag.hidden=false;
+}
+
+function applyTypeWording(){
+  const t=$("etype").value, corp=t==="Corporation", any=!!t;
+  const unit=!any?"shares or units":corp?"shares":"units";
+  $("capHead").textContent=!any?"Shares / units":corp?"Shares":"Membership units";
+  $("authLbl").textContent=`Number of authorized ${unit}`;
+  $("parLbl").textContent=`Par value per ${!any?"share / unit":corp?"share":"unit"} (USD)`;
+  $("parHint").textContent=corp?"A low par value keeps the price founders pay, and Delaware franchise tax, small.":any?"Many LLCs don't use par value; leave blank if not applicable.":"A low par value keeps the price founders pay, and Delaware franchise tax, small.";
+  $("peopleHead").textContent=!any?"Partners / shareholders":corp?"Shareholders":t==="LLC"?"Members":"Partners";
+}
+
+function renderPreview(){
+  const suf=$("suffix").disabled?"":$("suffix").value;
+  [["name1","prev1","Proposed name"],["name2","prev2","Second proposed name"]].forEach(([i,p,l])=>{
+    const n=$(i).value.trim();
+    $(p).innerHTML=n?esc(n+(suf?" "+suf:"")):`<span class="ph">${l} + suffix appears here</span>`;
+  });
+}
+
+function dirWord(){const t=$("etype").value;return t==="Corporation"?"Director":t==="LLC"?"Manager":t==="Partnership"?"General partner":"Director"}
+function personRow(p,i){
+  const role=$("etype").value==="Corporation"?"Shareholder":$("etype").value==="LLC"?"Member":$("etype").value==="Partnership"?"Partner":"Person";
+  return `<div class="person" data-i="${i}">
+    <div class="person-top"><strong>${role} ${i+1}</strong>${people.length>1?`<button type="button" class="link" data-del="${i}">Remove</button>`:""}</div>
+    <div class="grid">
+      <div class="field"><label for="p${i}name">Full legal name</label><input id="p${i}name" data-k="name" value="${esc(p.name)}" placeholder="As shown on passport"></div>
+      <div class="field"><label for="p${i}cit">Citizenship</label><input id="p${i}cit" data-k="cit" list="countries" value="${esc(p.cit)}" placeholder="e.g. India"></div>
+      <div class="field"><label for="p${i}tax">Tax residency</label><input id="p${i}tax" data-k="tax" list="countries" value="${esc(p.tax)}" placeholder="e.g. India"></div>
+      <div class="field"><label for="p${i}pct">Proposed shareholding %</label><input id="p${i}pct" data-k="pct" inputmode="decimal" value="${esc(p.pct)}" placeholder="e.g. 50"></div>
+      <div class="field"><label for="p${i}doc">Identification document</label>
+        <select id="p${i}doc" data-k="doc">${["","Passport","Driver's Licence"].map(o=>`<option value="${o}" ${p.doc===o?"selected":""}>${o||"Select…"}</option>`).join("")}</select></div>
+      <div class="field"><label for="p${i}docno">Document number</label><input id="p${i}docno" data-k="docno" value="${esc(p.docno)}"></div>
+      <div class="field"><label for="p${i}issuer">Issuing country / state</label><input id="p${i}issuer" data-k="issuer" list="countries" value="${esc(p.issuer)}"></div>
+      <div class="field"><label for="p${i}exp">Expiry date</label><input id="p${i}exp" data-k="exp" type="date" value="${esc(p.exp)}"></div>
+      <div class="field"><label for="p${i}dir">${dirWord()}?</label>
+        <select id="p${i}dir" data-k="dir">${["","Yes","No"].map(o=>`<option value="${o}" ${p.dir===o?"selected":""}>${o||"Select…"}</option>`).join("")}</select></div>
+      <div class="field"><label for="p${i}tidt">US tax ID type</label>
+        <select id="p${i}tidt" data-k="tidt">${["","SSN","ITIN","Not available"].map(o=>`<option value="${o}" ${p.tidt===o?"selected":""}>${o||"Select…"}</option>`).join("")}</select></div>
+      <div class="field"><label for="p${i}tid">SSN / ITIN number</label><input id="p${i}tid" data-k="tid" value="${esc(p.tid)}" placeholder="XXX-XX-XXXX" ${p.tidt==="Not available"?"disabled":""}>
+        <span class="hint">Required for ${dirWord().toLowerCase()}s who have one.</span></div>
+    </div>
+  </div>`;
+}
+function renderPeople(){$("people").innerHTML=people.map(personRow).join("");renderTotal()}
+function renderTotal(){
+  const t=people.reduce((a,p)=>a+(parseFloat(p.pct)||0),0), pill=$("totalPill");
+  pill.textContent=(Math.round(t*100)/100)+"%";
+  pill.className="pill "+(Math.abs(t-100)<0.001?"ok":t>100?"bad":"warn");
+  pill.title=Math.abs(t-100)<0.001?"Adds up to 100%":t>100?"Over 100%":"Should total 100%";
+}
+
+function state(){return{etype:$("etype").value,state:$("state").value,fye:$("fye").value,name1:$("name1").value,name2:$("name2").value,suffix:$("suffix").disabled?"":$("suffix").value,authorized:$("authorized").value,par:$("par").value,people}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state()));$("status").textContent="Draft saved in this browser"}catch(e){$("status").textContent="Draft not saved (browser storage unavailable)"}}
+function load(){
+  let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+  if(s){["etype","state","fye","name1","name2","authorized","par"].forEach(k=>$(k).value=s[k]||"");people=Array.isArray(s.people)&&s.people.length?s.people:[{},{}];setSuffixOptions(s.suffix)}
+  else{people=[{},{}];setSuffixOptions()}
+  applyTypeWording();renderPreview();renderPeople();
+}
+
+function summary(){
+  const s=state(), t=s.etype, corp=t==="Corporation";
+  const unit=corp?"shares":"units", L=[];
+  L.push("US COMPANY FORMATION – INTAKE");
+  L.push("Type of company: "+(t||"—"));
+  L.push("Preferred state: "+(s.state||"—"));
+  L.push("Books closing (fiscal year end): "+(s.fye||"—"));
+  L.push("Proposed name: "+(s.name1?s.name1+(s.suffix?" "+s.suffix:""):"—"));
+  L.push("Second proposed name: "+(s.name2?s.name2+(s.suffix?" "+s.suffix:""):"—"));
+  L.push("Suffix: "+(s.suffix||"—"));
+  L.push(`Authorized ${t?unit:"shares/units"}: `+(s.authorized||"—"));
+  L.push("Par value (USD): "+(s.par||"—"));
+  L.push("");
+  L.push((corp?"SHAREHOLDERS":t==="LLC"?"MEMBERS":"PARTNERS")+":");
+  s.people.forEach((p,i)=>{
+    L.push(`${i+1}. ${p.name||"—"}`);
+    L.push(`   Citizenship: ${p.cit||"—"} | Tax residency: ${p.tax||"—"}`);
+    L.push(`   ID: ${p.doc||"—"} ${p.docno||""} | Issued by: ${p.issuer||"—"} | Expiry: ${p.exp||"—"}`);
+    L.push(`   ${dirWord()}: ${p.dir||"—"} | US tax ID: ${p.tidt||"—"} ${p.tidt==="Not available"?"":(p.tid||"")}`);
+    L.push(`   Proposed holding: ${p.pct?p.pct+"%":"—"}`);
+  });
+  L.push("Total holding: "+$("totalPill").textContent);
+  return L.join("\n");
+}
+
+$("etype").addEventListener("change",()=>{setSuffixOptions();applyTypeWording();renderPreview();renderPeople();save()});
+["state","suffix","fye"].forEach(id=>$(id).addEventListener("change",()=>{renderPreview();save()}));
+["name1","name2","authorized","par"].forEach(id=>$(id).addEventListener("input",()=>{renderPreview();save()}));
+$("people").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;const i=+e.target.closest(".person").dataset.i;people[i][k]=e.target.value;if(k==="pct")renderTotal();save()});
+$("people").addEventListener("change",e=>{const k=e.target.dataset.k;if(!k)return;const i=+e.target.closest(".person").dataset.i;people[i][k]=e.target.value;if(k==="tidt"){const f=$(`p${i}tid`);f.disabled=e.target.value==="Not available";if(f.disabled){f.value="";people[i].tid=""}}save()});
+$("people").addEventListener("click",e=>{const d=e.target.dataset.del;if(d===undefined)return;people.splice(+d,1);renderPeople();save()});
+$("addPerson").addEventListener("click",()=>{people.push({});renderPeople();save();const n=$(`p${people.length-1}name`);n&&n.focus()});
+$("summaryBtn").addEventListener("click",()=>{$("out").value=summary();$("outPart").hidden=false;$("outPart").scrollIntoView({behavior:"smooth",block:"start"})});
+$("copyBtn").addEventListener("click",()=>{
+  const txt=summary();$("out").value=txt;$("outPart").hidden=false;
+  navigator.clipboard.writeText(txt).then(()=>{$("status").textContent="Summary copied"}).catch(()=>{$("out").focus();$("out").select();$("status").textContent="Press Ctrl/Cmd+C to copy the selected summary"});
+});
+let armed=false;
+$("resetBtn").addEventListener("click",()=>{
+  if(!armed){armed=true;$("resetBtn").textContent="Click again to clear";setTimeout(()=>{armed=false;$("resetBtn").textContent="Clear form"},3000);return}
+  armed=false;$("resetBtn").textContent="Clear form";
+  try{localStorage.removeItem(KEY)}catch(e){}
+  ["etype","state","fye","name1","name2","authorized","par"].forEach(k=>$(k).value="");
+  $("outPart").hidden=true;load();
+});
+load();
+</script>
+
+</body>
+</html>
